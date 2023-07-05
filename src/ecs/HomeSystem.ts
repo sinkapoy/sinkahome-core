@@ -1,13 +1,13 @@
-import { Engine, NodeList, RecordToNodeClass, System, defineNode } from "@ash.ts/ash";
+import { Node, NodeClassType, NodeList, System } from "@ash.ts/ash";
 import type { HomeEngine } from "./HomeEngine";
-import { NodeClassT } from "root/types/node";
+import { NodeClassT } from "@root/types/node";
 import { EventArgsT, EventCbT, HomeEvent } from "./HomeEvent";
 import { ArrayMap } from "../utils/ArrayMap";
 
 export abstract class HomeSystem<EventsT extends string = string> extends System {
-    private engine!: HomeEngine;
+    protected engine!: HomeEngine;
     private lists: NodeList<any>[] = [];
-    private listsUpdates = new Map<NodeList<any>, (node: NodeClassT<any>, dt?: number) => void>();
+    private listsUpdates = new Map<NodeList<any>, (node: Node, dt?: number) => void>();
     private incomeEvents: HomeEvent[] = [];
     private eventCallbacks = new ArrayMap<string, ((...args: any[]) => void)[]>();
 
@@ -22,7 +22,15 @@ export abstract class HomeSystem<EventsT extends string = string> extends System
 
     update(dt: number): void {
         this.eventsOnUpdate();
-
+        this.lists.forEach(list=>{
+            if(!this.listsUpdates.has(list)) return;
+            const updates = this.listsUpdates.get(list)!;
+            let node = list.head;
+            while(node){
+                updates(node, dt);
+                node = node.next;
+            }
+        });
         this.onUpdate(dt);
     }
 
@@ -38,11 +46,11 @@ export abstract class HomeSystem<EventsT extends string = string> extends System
         this.incomeEvents.splice(0);
     }
 
-    setupNodeList<T>(opt: {
-        node: new () => NodeClassT<T>;
-        onAdd?: (node: NodeClassT<T>) => void;
-        onRemove?: (node: NodeClassT<T>) => void;
-        onUpdate?: (node: NodeClassT<T>, dt?: number) => void;
+    setupNodeList<T extends Node>(opt: {
+        node: NodeClassType<T>;
+        onAdd?: (node: T) => void;
+        onRemove?: (node: T) => void;
+        onUpdate?: (node: T, dt: number) => void;
     }) {
         const list = this.engine.getNodeList(opt.node);
         if (opt.onAdd) {

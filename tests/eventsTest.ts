@@ -1,5 +1,5 @@
-import { HomeSystem } from "root/src/ecs/HomeSystem";
-import { HomeEngine } from "root/src/ecs/HomeEngine";
+import { HomeSystem } from "@root/src/ecs/HomeSystem";
+import { HomeEngine } from "@root/src/ecs/HomeEngine";
 
 class System1 extends HomeSystem {
     pass = false;
@@ -9,6 +9,14 @@ class System1 extends HomeSystem {
                 this.pass = true;
             }
         })
+    }
+
+    onUpdate(dt: number): void {
+        //
+    }
+
+    onDestroy(): void {
+        //
     }
 }
 

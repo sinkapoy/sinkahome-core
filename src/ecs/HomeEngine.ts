@@ -1,8 +1,6 @@
 import { Engine } from "@ash.ts/ash";
 import { HomeSystem } from "./HomeSystem";
-import { HomeEvent } from "./HomeEvent";
-
-type EventArgsT<T> = any[];
+import { EventArgsT, HomeEvent } from "./HomeEvent";
 
 export class HomeEngine extends Engine {
     private eventMaps = new Map<string, HomeSystem[]>();
