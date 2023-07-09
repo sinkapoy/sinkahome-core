@@ -1,7 +1,11 @@
 import { HomeSystem } from "@root/src/ecs/HomeSystem";
 import { HomeEngine } from "@root/src/ecs/HomeEngine";
+import { IHomeCoreEvents } from "@root/src/exportedTypes/common";
 
-class System1 extends HomeSystem {
+interface ITestEvents extends IHomeCoreEvents {
+    testEvent : [string, string],
+}
+class System1 extends HomeSystem< ITestEvents> {
     pass = false;
     onInit(): void {
         this.setupEvent('testEvent', (arg1: string, arg2: string)=>{
@@ -24,8 +28,7 @@ export function eventsTest(){
     const engine = new HomeEngine();
     const system = new System1();
     engine.addSystem(system, 0);
-
-    engine.emit('testEvent', 'arg1', 'arg2');
+    engine.emit<ITestEvents>('testEvent', 'arg1', 'arg2');
     engine.update(0);
     
     return system.pass;

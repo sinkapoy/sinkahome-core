@@ -1,15 +1,15 @@
 import { Node, NodeClassType, NodeList, System } from "@ash.ts/ash";
 import type { HomeEngine } from "./HomeEngine";
-import { NodeClassT } from "@root/types/node";
-import { EventArgsT, EventCbT, HomeEvent } from "./HomeEvent";
+import { EventCbT, HomeEvent } from "./HomeEvent";
 import { ArrayMap } from "../utils/ArrayMap";
+import { IHomeCoreEvents } from "@root/src/exportedTypes/common";
 
-export abstract class HomeSystem<EventsT extends string = string> extends System {
+export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> extends System {
     protected engine!: HomeEngine;
     private lists: NodeList<any>[] = [];
     private listsUpdates = new Map<NodeList<any>, (node: Node, dt?: number) => void>();
     private incomeEvents: HomeEvent[] = [];
-    private eventCallbacks = new ArrayMap<string, ((...args: any[]) => void)[]>();
+    private eventCallbacks = new ArrayMap<string | number | symbol, ((...args: any[]) => void)[]>();
 
     addToEngine(engine: HomeEngine): void {
         this.engine = engine;
@@ -22,11 +22,11 @@ export abstract class HomeSystem<EventsT extends string = string> extends System
 
     update(dt: number): void {
         this.eventsOnUpdate();
-        this.lists.forEach(list=>{
-            if(!this.listsUpdates.has(list)) return;
+        this.lists.forEach(list => {
+            if (!this.listsUpdates.has(list)) return;
             const updates = this.listsUpdates.get(list)!;
             let node = list.head;
-            while(node){
+            while (node) {
                 updates(node, dt);
                 node = node.next;
             }
@@ -73,14 +73,17 @@ export abstract class HomeSystem<EventsT extends string = string> extends System
 
     abstract onUpdate(dt: number): void;
 
-    setupEvent<ArgsT extends EventArgsT<EventsT> = EventArgsT<EventsT>>
-        (name: EventsT, cb: EventCbT<ArgsT>, once = false) {
+    setupEvent<Type extends keyof T & string>
+        (
+            name: Type,
+            cb: EventCbT<T[Type] & []>, once = false
+        ) {
         if (once) {
-            throw new Error('not emplemented');
+            throw new Error('once event subscription not emplemented');
         } else {
             this.engine.on(name, this);
             const cbs = this.eventCallbacks.get(name);
-            cbs.push(cb as EventCbT);
+            cbs.push(cb as unknown as EventCbT);
         }
     }
 
