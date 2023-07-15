@@ -2,9 +2,15 @@ import { Engine } from "@ash.ts/ash";
 import { HomeSystem } from "./HomeSystem";
 import { HomeEvent } from "./HomeEvent";
 import { IHomeCoreEvents } from "../exportedTypes/common";
+import { FileProviderSystem } from "@root/src/ecs/systems/FileProviderSystem";
 
 export class HomeEngine extends Engine {
     private eventMaps = new Map<string | number | symbol, HomeSystem<any>[]>();
+
+    constructor(){
+        super();
+        this.addSystem(new FileProviderSystem(), 0);
+    }
 
     emit<T extends IHomeCoreEvents>
         // @ts-ignore

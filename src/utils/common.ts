@@ -23,3 +23,15 @@ export function createGadget(uuid: uuidT, own: boolean) {
 
     return entity;
 }
+
+export enum VM_TYPE {
+    nodejs,
+    browser,
+}
+
+export function checkVM() {
+    if (typeof window === undefined) {
+        return VM_TYPE.nodejs;
+    }
+    return VM_TYPE.browser;
+}
