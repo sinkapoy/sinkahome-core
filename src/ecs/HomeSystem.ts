@@ -5,14 +5,14 @@ import { ArrayMap } from "../utils/ArrayMap";
 import { IHomeCoreEvents } from "@root/src/exportedTypes/common";
 
 export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> extends System {
-    protected engine!: HomeEngine;
+    protected engine!: HomeEngine<T>;
     private lists: NodeList<any>[] = [];
     private listsUpdates = new Map<NodeList<any>, (node: Node, dt?: number) => void>();
     private incomeEvents: HomeEvent[] = [];
     private eventCallbacks = new ArrayMap<string | number | symbol, ((...args: any[]) => void)[]>();
 
-    addToEngine(engine: HomeEngine): void {
-        this.engine = engine;
+    addToEngine(engine: HomeEngine<any>): void {
+        this.engine = engine as HomeEngine<T>;
         this.onInit();
     }
 

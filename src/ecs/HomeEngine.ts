@@ -4,7 +4,7 @@ import { HomeEvent } from "./HomeEvent";
 import { IHomeCoreEvents } from "../exportedTypes/common";
 import { FileProviderSystem } from "@root/src/ecs/systems/FileProviderSystem";
 
-export class HomeEngine extends Engine {
+export class HomeEngine<EventsT = Record<string, []>> extends Engine {
     private eventMaps = new Map<string | number | symbol, HomeSystem<any>[]>();
 
     constructor(){
@@ -12,9 +12,9 @@ export class HomeEngine extends Engine {
         this.addSystem(new FileProviderSystem(), 0);
     }
 
-    emit<T extends IHomeCoreEvents>
+    emit
         // @ts-ignore
-        (event: keyof T, ...args: T[typeof event]) {
+        (event: keyof (EventsT & IHomeCoreEvents), ...args: (EventsT&IHomeCoreEvents)[typeof event]) {
         if (!this.eventMaps.has(event)) return;
         const systems = this.getEventMapArray(event);
         // @ts-ignore

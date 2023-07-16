@@ -8,3 +8,4 @@ export * from "@root/src/utils/ArrayMap";
 export * from "@root/src/utils/common";
 
 export const homeEngine = new HomeEngine();
+export type HomeEngineT<T> = HomeEngine<T>;
