@@ -30,7 +30,7 @@ export enum VM_TYPE {
 }
 
 export function checkVM() {
-    if (typeof window === undefined) {
+    if (typeof window === 'undefined') {
         return VM_TYPE.nodejs;
     }
     return VM_TYPE.browser;
