@@ -6,11 +6,17 @@ import typescript from "rollup-plugin-typescript2";
 export default [
     {
         input: "src/index.ts",
-        external: ['websocket', 'fs', 'fs/promises', 'http'],
+        external: [
+            'websocket',
+            'fs',
+            'fs/promises',
+            'http',
+            '@ash.ts/ash'
+        ],
         output: [
             {
                 file: "dist/core.js",
-                format: "cjs",
+                format: "es",
                 sourcemap: true,
             }
         ],
