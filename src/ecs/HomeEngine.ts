@@ -12,9 +12,9 @@ export class HomeEngine<EventsT = Record<string, []>> extends Engine {
         this.addSystem(new FileProviderSystem(), 0);
     }
 
-    emit
+    emit<T extends keyof EventsT>
         // @ts-ignore
-        (event: keyof (EventsT & IHomeCoreEvents), ...args: (EventsT&IHomeCoreEvents)[typeof event]) {
+        (event: T, ...args: (EventsT)[T]) {
         if (!this.eventMaps.has(event)) return;
         const systems = this.getEventMapArray(event);
         // @ts-ignore
