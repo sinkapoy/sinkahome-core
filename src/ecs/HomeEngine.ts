@@ -4,10 +4,10 @@ import { HomeEvent } from "./HomeEvent";
 import { IHomeCoreEvents } from "../exportedTypes/common";
 import { FileProviderSystem } from "@root/src/ecs/systems/FileProviderSystem";
 
-export class HomeEngine<EventsT = Record<string, []>> extends Engine {
+export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> extends Engine {
     private eventMaps = new Map<string | number | symbol, HomeSystem<any>[]>();
-
-    constructor(){
+    private nextTickCbs: (() => void | Promise<void>)[] = [];
+    constructor() {
         super();
         this.addSystem(new FileProviderSystem(), 0);
     }
@@ -50,5 +50,19 @@ export class HomeEngine<EventsT = Record<string, []>> extends Engine {
             this.eventMaps.set(event, array);
         }
         return array;
+    }
+
+    nextUpdate(cb: () => void | Promise<void>) {
+        this.nextTickCbs.push(cb);
+    }
+
+    update(dt: number): void {
+        if (this.nextTickCbs.length) {
+            for (let i = 0; i < this.nextTickCbs.length; i++) {
+                this.nextTickCbs[i]();
+            }
+            this.nextTickCbs.splice(0);
+        }
+        super.update(dt);
     }
 }
