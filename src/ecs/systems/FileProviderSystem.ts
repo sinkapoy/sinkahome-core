@@ -1,4 +1,3 @@
-import { appendFile } from "fs/promises";
 import { IFileProvider } from "@root/src/utils/fileProviders/IFileProvider";
 import { HomeSystem } from "../HomeSystem";
 import { FileProviderFabric } from "@root/src/utils/fileProviders/FileProviderFabric";
