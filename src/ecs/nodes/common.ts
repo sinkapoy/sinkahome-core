@@ -18,3 +18,10 @@ export class ActionsGadgetNode extends defineNode({
     data: GadgetComponent,
     actions: ActionsComponent,
 }) { }
+
+export class GadgetNode extends defineNode({
+    data: GadgetComponent,
+    actions: ActionsComponent,
+    events: EventsComponent,
+    properties: PropertiesComponent,
+}) { }
