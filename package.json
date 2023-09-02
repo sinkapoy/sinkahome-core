@@ -1,6 +1,6 @@
 {
   "name": "@sinkapoy/home-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "home core package",
   "main": "dist/core.js",
   "type": "module",
