@@ -4,7 +4,7 @@ import { Entity } from "@ash.ts/ash";
 export interface IGadgetEvents {
     'gadgetEvent': [Entity, ...any],
     'gadgetPropertyEvent': [Entity, Property],
-    'writeGadgetProperty': [Entity, string, string | number | boolean],
+    'writeGadgetProperty': [entity: Entity, id:string, value: string | number | boolean],
 }
 
 export type GadgetEventsT = keyof IGadgetEvents;
