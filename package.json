@@ -34,5 +34,10 @@
   },
   "dependencies": {
     "@ash.ts/ash": "^1.3.0"
-  }
+  },
+  "files": [
+    "dist/core.js",
+    "dist/core.js.map",
+    "dist/core.d.ts"
+  ]
 }
