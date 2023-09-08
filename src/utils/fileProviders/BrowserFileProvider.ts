@@ -15,4 +15,8 @@ export class BrowserFileProvider implements IFileProvider {
         const file = await this.read(path) ?? '';
         await this.write(path, file + content);
     }
+
+    async listDir(path: string): Promise<string[]> {
+        return [];
+    }
 }

@@ -12,6 +12,8 @@ export interface IFileEvents {
     'fileContent': [FileT];
     'writeFile': [FileT];
     'appendFile': [FileT];
+    'listDir': [dirPath: string];
+    'dirFiles': [dirPath: string, dirFileNames: string[]];
 }
 
 export class FileProviderSystem extends HomeSystem{
@@ -31,6 +33,10 @@ export class FileProviderSystem extends HomeSystem{
         });
         this.setupEvent('appendFile', (file: FileT)=>{
             this.fileDriver.append(file.path, file.content);
+        });
+
+        this.setupEvent('listDir', async (dir)=>{
+            this.engine.emit('dirFiles', dir, await this.fileDriver.listDir(dir));
         });
     }
 

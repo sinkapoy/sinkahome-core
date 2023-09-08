@@ -8,6 +8,13 @@ export enum PropertyAccessMode {
     rn = 0b0101,
 }
 
+export enum PropertyDataType {
+    int,
+    float,
+    string,
+    boolean
+}
+
 export interface IProperty {
     id: string;
     accessMode: PropertyAccessMode | number;
@@ -15,6 +22,7 @@ export interface IProperty {
     min?: number;
     max?: number;
     description?: string;
+    dataType?: PropertyDataType
 }
 
 export class Property<T extends string | number | boolean = string | number | boolean> {

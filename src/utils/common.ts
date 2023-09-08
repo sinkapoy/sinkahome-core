@@ -35,3 +35,7 @@ export function checkVM() {
     }
     return VM_TYPE.browser;
 }
+
+export function uniqueArray<T>(array: T[]) {
+    return array.filter((element, index) => array.indexOf(element) === index);
+}

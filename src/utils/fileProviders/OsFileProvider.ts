@@ -35,4 +35,8 @@ export class OsFileProvider implements IFileProvider {
         }
         await fsPromises.appendFile(path, content, { encoding: 'utf-8' });
     }
+
+    async listDir(path: string): Promise<string[]> {
+        return (await fsPromises.readdir(path, { withFileTypes: true, recursive: true })).map(f => f.name);
+    }
 }
