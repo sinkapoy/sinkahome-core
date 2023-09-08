@@ -11,7 +11,8 @@ export default [
             'fs',
             'fs/promises',
             'http',
-            '@ash.ts/ash'
+            '@ash.ts/ash',
+            /node_modules/
         ],
         output: [
             {
