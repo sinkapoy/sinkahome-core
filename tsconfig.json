@@ -17,17 +17,13 @@
         "resolveJsonModule": true,
         "strictPropertyInitialization": false,
         "moduleResolution": "node",
-        "baseUrl": ".",
+        "baseUrl": "./",
         "lib": [
             "dom",
             "esnext",
             "ES2018"
         ],
-        "paths": {
-            "@root/*": [
-                "./*"
-            ],
-        },
+        "paths": {},
         "skipDefaultLibCheck": true,
         "declaration": true,
         "declarationDir": "dist",

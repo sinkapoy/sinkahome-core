@@ -1,9 +1,9 @@
-import { uuidT } from "@root/src/exportedTypes/common";
+import { type uuidT } from '../../exportedTypes/common';
 
 export class GadgetComponent {
-    constructor(
+    constructor (
         /** unique string */
         public readonly uuid: uuidT,
-        public readonly own: boolean,
-        ) { }
+        public readonly own: boolean
+    ) { }
 }

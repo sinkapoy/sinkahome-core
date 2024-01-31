@@ -1,15 +1,16 @@
 {
   "name": "@sinkapoy/home-core",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "home core package",
   "main": "dist/core.js",
   "type": "module",
   "browser": "dist/core.js",
   "typings": "dist/core.d.ts",
   "scripts": {
-    "test": "tsx ./tests/index.ts",
     "build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript && dts-bundle-generator -o dist/core.d.ts --project tsconfig.json src/index.ts",
-    "generateTypes": "dts-bundle-generator -o dist/core.d.ts --project tsconfig.json src/index.ts"
+    "generateTypes": "dts-bundle-generator -o dist/core.d.ts --project tsconfig.json src/index.ts",
+    "watch": "rollup -c rollup.config.ts --watch --configPlugin @rollup/plugin-typescript",
+    "lint": "npx eslint \"src/**/*.{js,ts,vue,json}\" --fix"
   },
   "keywords": [
     "typescript"
@@ -18,7 +19,16 @@
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.2",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
     "dts-bundle-generator": "^8.0.1",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-vue": "^9.20.1",
     "prettier": "^3.0.0",
     "rollup": "^3.26.0",
     "rollup-plugin-commonjs": "^10.1.0",
@@ -30,7 +40,8 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.6.0",
-    "tsx": "^3.12.7"
+    "tsx": "^3.12.7",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "@ash.ts/ash": "^1.3.0"

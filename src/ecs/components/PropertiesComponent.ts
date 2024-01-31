@@ -9,50 +9,123 @@ export enum PropertyAccessMode {
 }
 
 export enum PropertyDataType {
+    any,
+    /** integer number (all types like uint8-64 int8-64) */
     int,
+    /** float point number */
     float,
+    /** string */
     string,
-    boolean
+    /** boolean */
+    boolean,
+    /** use for Array and Record<any, any> and null types */
+    object,
+    /** serialized json object (string which can be converted to js object) */
+    json,
 }
+
+export type ValuePropertyT<T extends PropertyDataType> = T extends PropertyDataType.boolean ? boolean :
+    T extends PropertyDataType.float ? number :
+        T extends PropertyDataType.int ? number :
+            T extends PropertyDataType.string ? string :
+                T extends PropertyDataType.json ? string :
+                    T extends PropertyDataType.object ? object :
+                        any;
 
 export interface IProperty {
-    id: string;
-    accessMode: PropertyAccessMode | number;
-    value: string | number | boolean;
-    min?: number;
-    max?: number;
-    description?: string;
+    id: string
+    accessMode: PropertyAccessMode | number
+    value: string | number | boolean | any[] | object
+    min?: number
+    max?: number
+    description?: string
     dataType?: PropertyDataType
+    units?: string
 }
 
-export class Property<T extends string | number | boolean = string | number | boolean> {
+export class Property<T extends PropertyDataType> {
     description?: string;
 
-    constructor(
-        public readonly id: string,
-        public readonly accessMode: PropertyAccessMode | number,
-        public value: T | null = null,
-        public min?: number,
-        public max?: number,
-    ) {
+    readonly id: string;
+
+    readonly accessMode: PropertyAccessMode;
+
+    min?: number;
+
+    max?: number;
+
+    value: ValuePropertyT<T>;
+
+    dataType: T;
+
+    units?: string;
+
+    constructor (opt: {
+        id: string
+        accessMode: PropertyAccessMode
+        min?: number
+        max?: number
+        dataType: T
+        value: ValuePropertyT<T>
+        units?: string
+    }) {
+        this.value = opt.value;
+        this.dataType = opt.dataType;
+        this.id = opt.id;
+        this.accessMode = opt.accessMode;
+        this.min = opt.min;
+        this.max = opt.max;
+        this.units = opt.units;
     }
 }
 
 export class PropertiesComponent extends Map<string, Property<any>> {
-    createPropertyFromJson(json: IProperty) {
-        if (!json.id || !json.accessMode) {
-            throw new Error('try convert broken json to gadget property\n' + JSON.stringify(json));
+    createPropertyFromJson<T extends PropertyDataType = PropertyDataType.any>(json: IProperty): Property<T> {
+        const isAccessMode = json.accessMode === undefined || json.accessMode === null;
+        if (!json.id || isAccessMode) {
+            throw new Error(`try convert broken json to gadget property\n${JSON.stringify(json)}`);
         }
-        this.set(json.id, new Property(
-            json.id,
-            json.accessMode,
-            json.value,
-            json.min,
-            json.max
-        ));
+
+        let { dataType } = json;
+        if (dataType == null) {
+            switch (typeof json.value) {
+                    case 'boolean':
+                        dataType = PropertyDataType.boolean;
+                        break;
+                    case 'number':
+                        dataType = PropertyDataType.float;
+                        break;
+                    case 'string':
+                        try {
+                            JSON.parse(json.value);
+                            dataType = PropertyDataType.json;
+                        } catch {
+                            dataType = PropertyDataType.string;
+                        }
+                        break;
+                    case 'object':
+                        dataType = PropertyDataType.object;
+                        break;
+                    default:
+                        dataType = PropertyDataType.any;
+            }
+        }
+
+        const property = new Property(
+            {
+                ...json,
+                dataType
+            }
+        );
+        this.set(json.id, property);
+        return property as Property<T>;
     }
 
-    getTyped<T extends string | number | boolean>(string) {
-        return this.get(string) as Property<T> | undefined;
+    add (property: Property<any>): void {
+        this.set(property.id, property);
+    }
+
+    getTyped<T extends PropertyDataType>(id: string): Property<T> | undefined {
+        return this.get(id) as Property<T> | undefined;
     }
 }

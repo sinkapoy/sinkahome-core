@@ -1,5 +1,5 @@
-import type { Node } from "@ash.ts/ash"
+import type { Node } from '@ash.ts/ash';
 
 export declare type NodeClassT<T> = Node & {
-    [P in keyof T]: new()=>T[P];
-}
+    [P in keyof T]: new() => T[P];
+};

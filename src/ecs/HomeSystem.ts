@@ -1,31 +1,37 @@
-import { Node, NodeClassType, NodeList, System } from "@ash.ts/ash";
-import type { HomeEngine } from "./HomeEngine";
-import { EventCbT, HomeEvent } from "./HomeEvent";
-import { ArrayMap } from "../utils/ArrayMap";
-import { IHomeCoreEvents } from "@root/src/exportedTypes/common";
+import {
+    type Node, type NodeClassType, type NodeList, System
+} from '@ash.ts/ash';
+import type { HomeEngine } from './HomeEngine';
+import { type EventCbT, type HomeEvent } from './HomeEvent';
+import { ArrayMap } from '../utils/ArrayMap';
+import { type IHomeCoreEvents } from '../exportedTypes/common';
 
 export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> extends System {
     protected engine!: HomeEngine<T>;
-    private lists: NodeList<any>[] = [];
-    private listsUpdates = new Map<NodeList<any>, (node: Node, dt?: number) => void>();
-    private incomeEvents: HomeEvent[] = [];
-    private eventCallbacks = new ArrayMap<string | number | symbol, ((...args: any[]) => void)[]>();
 
-    addToEngine(engine: HomeEngine<any>): void {
+    private readonly lists: Array<NodeList<any>> = [];
+
+    private readonly listsUpdates = new Map<NodeList<any>, (node: Node, dt?: number) => void>();
+
+    private readonly incomeEvents: HomeEvent[] = [];
+
+    private readonly eventCallbacks = new ArrayMap<string | number | symbol, Array<(...args: any[]) => void>>();
+
+    addToEngine (engine: HomeEngine<any>): void {
         this.engine = engine as HomeEngine<T>;
         this.onInit();
     }
 
-    removeFromEngine(engine: HomeEngine): void {
+    removeFromEngine (engine: HomeEngine): void {
         this.onDestroy();
     }
 
-    update(dt: number): void {
+    update (dt: number): void {
         this.eventsOnUpdate();
-        this.lists.forEach(list => {
+        this.lists.forEach((list) => {
             if (!this.listsUpdates.has(list)) return;
             const updates = this.listsUpdates.get(list)!;
-            let node = list.head;
+            let node: Node | null = list.head;
             while (node) {
                 updates(node, dt);
                 node = node.next;
@@ -34,12 +40,13 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
         this.onUpdate(dt);
     }
 
-    private eventsOnUpdate() {
+    private eventsOnUpdate (): void {
         for (let i = 0; i < this.incomeEvents.length; i++) {
             const event = this.incomeEvents[i];
             if (!this.eventCallbacks.has(event.name)) continue;
             const cbs = this.eventCallbacks.get(event.name);
             for (let cbi = 0; cbi < cbs.length; cbi++) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 cbs[cbi](...event.args);
             }
         }
@@ -47,11 +54,11 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
     }
 
     setupNodeList<T extends Node>(opt: {
-        node: NodeClassType<T>;
-        onAdd?: (node: T) => void;
-        onRemove?: (node: T) => void;
-        onUpdate?: (node: T, dt: number) => void;
-    }) {
+        node: NodeClassType<T>
+        onAdd?: (node: T) => void
+        onRemove?: (node: T) => void
+        onUpdate?: (node: T, dt: number) => void
+    }): NodeList<T> {
         const list = this.engine.getNodeList(opt.node);
         if (opt.onAdd) {
             list.nodeAdded.add(opt.onAdd);
@@ -67,17 +74,17 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
         return list;
     }
 
-    abstract onInit(): void;
+    abstract onInit (): void;
 
-    abstract onDestroy(): void;
+    abstract onDestroy (): void;
 
-    abstract onUpdate(dt: number): void;
+    abstract onUpdate (dt: number): void;
 
-    setupEvent<Type extends keyof T & string>
-        (
-            name: Type,
-            cb: EventCbT<T[Type] & []>, once = false
-        ) {
+    setupEvent<Type extends keyof T & string>(
+        name: Type,
+        cb: EventCbT<T[Type] & []>,
+        once = false
+    ): void {
         if (once) {
             throw new Error('once event subscription not emplemented');
         } else {
@@ -87,7 +94,7 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
         }
     }
 
-    processEmitedEvent(event: HomeEvent) {
+    processEmitedEvent (event: HomeEvent): void {
         this.incomeEvents.push(event);
     }
 }

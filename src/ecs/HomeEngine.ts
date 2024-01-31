@@ -1,33 +1,37 @@
-import { Engine } from "@ash.ts/ash";
-import { HomeSystem } from "./HomeSystem";
-import { HomeEvent } from "./HomeEvent";
-import { IHomeCoreEvents } from "../exportedTypes/common";
-import { FileProviderSystem } from "@root/src/ecs/systems/FileProviderSystem";
-import { ArrayMap } from "@root/src/utils/ArrayMap";
+import { Engine } from '@ash.ts/ash';
+import { FileProviderSystem } from './systems/FileProviderSystem';
+import { ArrayMap } from '../utils/ArrayMap';
+import { type HomeSystem } from './HomeSystem';
+import { HomeEvent } from './HomeEvent';
+import { type IHomeCoreEvents } from '../exportedTypes/common';
+import { UsersSystem } from './systems/UsersSystem';
 
 export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> extends Engine {
-    private eventMaps = new Map<string | number | symbol, HomeSystem<any>[]>();
-    private nextTickCbs: (() => void | Promise<void>)[] = [];
-    private eventsToEmit = new ArrayMap<string | number | symbol, HomeEvent[]>();
+    private readonly eventMaps = new Map<string | number | symbol, Array<HomeSystem<any>>>();
 
-    constructor() {
+    private readonly nextTickCbs: Array<() => void | Promise<void>> = [];
+
+    private readonly eventsToEmit = new ArrayMap<string | number | symbol, HomeEvent[]>();
+
+    constructor () {
         super();
         this.addSystem(new FileProviderSystem(), 0);
+        this.addSystem(new UsersSystem(), 0);
     }
 
     emit<T extends keyof EventsT>
-        // @ts-ignore
-        (event: T, ...args: (EventsT)[T]) {
-        // @ts-ignore
+    // @ts-expect-error force rest arg
+    (event: T, ...args: (EventsT)[T]): void {
+        // @ts-expect-error force rest arg
         const eventObj = new HomeEvent(event, ...args);
         this.eventsToEmit.get(event).push(eventObj);
     }
 
-    on<T extends string = string>(event: T, system: HomeSystem<any>) {
+    on<T extends string = string>(event: T, system: HomeSystem<any>): void {
         this.getEventMapArray(event).push(system);
     }
 
-    off<T extends string = string>(event: T, system?: HomeSystem<any>) {
+    off<T extends string = string>(event: T, system?: HomeSystem<any>): void {
         if (!system) {
             this.eventMaps.delete(event);
         }
@@ -35,29 +39,28 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
             this.eventMaps.set(
                 event,
                 this.getEventMapArray(event).filter(
-                    (s) => {
-                        s !== system
-                    }
-                ));
+                    (s) => s !== system
+                )
+            );
         }
     }
 
-    private getEventMapArray(event: string | number | symbol): HomeSystem<any>[] {
+    private getEventMapArray (event: string | number | symbol): Array<HomeSystem<any>> {
         let array = this.eventMaps.get(event);
         if (!array) {
-            array = [] as HomeSystem<any>[];
+            array = [] as Array<HomeSystem<any>>;
             this.eventMaps.set(event, array);
         }
         return array;
     }
 
-    nextUpdate(cb: () => void | Promise<void>) {
+    nextUpdate (cb: () => void | Promise<void>): void {
         this.nextTickCbs.push(cb);
     }
 
-    update(dt: number): void {
+    update (dt: number): void {
         // tick callbacks
-        if (this.nextTickCbs.length) {
+        if (this.nextTickCbs.length > 0) {
             for (let i = 0; i < this.nextTickCbs.length; i++) {
                 this.nextTickCbs[i]();
             }
@@ -79,6 +82,16 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
         }
         this.eventsToEmit.clear();
         // systems update
-        super.update(dt);
+        this.updating = true;
+        // @ts-expect-error read private field systemList
+        for (let system: System | null = this.systemList.head; system; system = system.next) {
+            try {
+                system.update(dt);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        this.updating = false;
+        this.updateComplete.dispatch();
     }
 }
