@@ -4,10 +4,12 @@
 import type PathT from 'path';
 import { type IFileProviderService } from './IFileProviderService';
 
+declare type PathModuleT = typeof import('node:path');
 declare type FsPromisesModuleT = typeof import('node:fs/promises');
 declare type FsModuleT = typeof import('node:fs');
 let fsPromises: FsPromisesModuleT;
 let fs: FsModuleT;
+let path: PathModuleT;
 let dirname: typeof PathT.dirname;
 
 if (!process.env.browser) {
@@ -15,6 +17,7 @@ if (!process.env.browser) {
     fsPromises = require('fs/promises') as FsPromisesModuleT;
     fs = require('fs') as FsModuleT;
     dirname = require('path').dirname;
+    path = require('path');
     /* eslint-enable */
 }
 
@@ -68,5 +71,17 @@ export class OsFileProvider implements IFileProviderService {
 
     async mkdir (p: string): Promise<void> {
         await fsPromises.mkdir(p, { recursive: true });
+    }
+
+    join (...paths: string[]): string {
+        return path.join(...paths);
+    }
+
+    dirname (p: string): string {
+        return path.dirname(p);
+    }
+
+    filename (p: string): string {
+        return path.basename(p);
     }
 }

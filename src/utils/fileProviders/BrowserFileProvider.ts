@@ -35,4 +35,16 @@ export class BrowserFileProvider implements IFileProviderService {
     async mkdir (path: string): Promise<void> {
         await Promise.resolve();
     }
+
+    join (...path: string[]): string {
+        return path.join('/').replace(/\/\//g, '/');
+    }
+
+    dirname (path: string): string {
+        return path;
+    }
+
+    filename (path: string): string {
+        return path;
+    }
 }

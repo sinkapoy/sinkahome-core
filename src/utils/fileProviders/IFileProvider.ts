@@ -6,4 +6,7 @@ export interface IFileProvider {
     listDir: (path: string) => Promise<string[]>
     exist: (path: string) => Promise<boolean>
     mkdir: (path: string) => Promise<void>
+    join(...path: string[]): string
+    dirname(path: string): string
+    filename(path: string): string
 }

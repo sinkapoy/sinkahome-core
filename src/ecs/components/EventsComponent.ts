@@ -1,5 +1,5 @@
 import type { Entity } from '@ash.ts/ash';
-import type { Property } from './PropertiesComponent';
+import type { Property, PropertyDataType } from './PropertiesComponent';
 
 export interface IGadgetEvents {
     'gadgetEvent': [Entity, ...any]
@@ -9,6 +9,23 @@ export interface IGadgetEvents {
 
 export type GadgetEventsT = keyof IGadgetEvents;
 export type GadgetEventsArgsT<T extends GadgetEventsT> = IGadgetEvents[T];
-export class EventsComponent extends Array<string | Property<any>> {
 
+export interface IGadgetEvent {
+    id: string
+    args: Record<string, PropertyDataType>
+}
+
+class Event implements IGadgetEvent {
+    args: Record<string, PropertyDataType> = {};
+    constructor (public readonly id: string) {
+
+    }
+}
+export class EventsComponent extends Map<string, Event> {
+    createFromJson (json: Partial<IGadgetEvent>): Event {
+        if (!json.id) throw new Error('try to create event without id');
+        const event = new Event(json.id);
+        this.set(json.id, event);
+        return event;
+    }
 }
