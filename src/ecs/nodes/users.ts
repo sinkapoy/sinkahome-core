@@ -2,7 +2,7 @@ import { defineNode, JsonEngineCodec } from '@ash.ts/ash';
 import { UserComponent } from '../components/users';
 
 const CLASS_MAP = {
-    user: UserComponent
+    user: UserComponent,
 };
 
 export const userEntityIOCodec = new JsonEngineCodec(CLASS_MAP as any);

@@ -33,14 +33,15 @@ export type ValuePropertyT<T extends PropertyDataType> = T extends PropertyDataT
                         any;
 
 export interface IProperty {
-    id: string
-    accessMode: PropertyAccessMode | number
-    value: string | number | boolean | any[] | object
-    min?: number
-    max?: number
-    description?: string
-    dataType?: PropertyDataType
-    units?: string
+    id: string;
+    accessMode: PropertyAccessMode | number;
+    value: string | number | boolean | any[] | object;
+    min?: number;
+    max?: number;
+    enumData?: Record<string, any>;
+    description?: string;
+    dataType?: PropertyDataType;
+    units?: string;
 }
 
 export class Property<T extends PropertyDataType> {
@@ -56,18 +57,21 @@ export class Property<T extends PropertyDataType> {
 
     value: ValuePropertyT<T>;
 
+    enumData?: Record<string, ValuePropertyT<T>>;
+
     dataType: T;
 
     units?: string;
 
     constructor (opt: {
-        id: string
-        accessMode: PropertyAccessMode
-        min?: number
-        max?: number
-        dataType: T
-        value: ValuePropertyT<T>
-        units?: string
+        id: string;
+        accessMode: PropertyAccessMode;
+        min?: number;
+        max?: number;
+        dataType: T;
+        value: ValuePropertyT<T>;
+        units?: string;
+        enumData?: Record<string, ValuePropertyT<T>>;
     }) {
         this.value = opt.value;
         this.dataType = opt.dataType;
@@ -76,6 +80,7 @@ export class Property<T extends PropertyDataType> {
         this.min = opt.min;
         this.max = opt.max;
         this.units = opt.units;
+        if (opt.enumData) this.enumData = JSON.parse(JSON.stringify(opt.enumData));
     }
 }
 
@@ -87,7 +92,7 @@ export class PropertiesComponent extends Map<string, Property<any>> {
         }
 
         let { dataType } = json;
-        if (dataType == null) {
+        if (!dataType) {
             switch (typeof json.value) {
                     case 'boolean':
                         dataType = PropertyDataType.boolean;
@@ -114,8 +119,8 @@ export class PropertiesComponent extends Map<string, Property<any>> {
         const property = new Property(
             {
                 ...json,
-                dataType
-            }
+                dataType,
+            },
         );
         this.set(json.id, property);
         return property as Property<T>;

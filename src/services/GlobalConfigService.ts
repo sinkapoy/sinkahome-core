@@ -1,8 +1,8 @@
 import { type IService } from '../utils/ServiceLocator';
 
 interface IBaseConfigs {
-    configFilesPath: string
-    configIntegrationFilesPath: string
+    configFilesPath: string;
+    configIntegrationFilesPath: string;
 }
 
 export class GlobalConfigService implements IService {
@@ -10,7 +10,7 @@ export class GlobalConfigService implements IService {
 
     private readonly config: Record<string, any> & IBaseConfigs = {
         configFilesPath: 'serverData',
-        configIntegrationFilesPath: 'serverData/integrations'
+        configIntegrationFilesPath: 'serverData/integrations',
     };
 
     get inited (): boolean {

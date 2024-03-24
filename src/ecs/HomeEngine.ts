@@ -4,7 +4,6 @@ import { ArrayMap } from '../utils/ArrayMap';
 import { type HomeSystem } from './HomeSystem';
 import { HomeEvent } from './HomeEvent';
 import { type IHomeCoreEvents } from '../exportedTypes/common';
-import { UsersSystem } from './systems/UsersSystem';
 
 export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> extends Engine {
     private readonly eventMaps = new Map<string | number | symbol, Array<HomeSystem<any>>>();
@@ -16,7 +15,6 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
     constructor () {
         super();
         this.addSystem(new FileProviderSystem(), 0);
-        this.addSystem(new UsersSystem(), 0);
     }
 
     emit<T extends keyof EventsT>
@@ -39,8 +37,8 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
             this.eventMaps.set(
                 event,
                 this.getEventMapArray(event).filter(
-                    (s) => s !== system
-                )
+                    (s) => s !== system,
+                ),
             );
         }
     }

@@ -3,8 +3,8 @@ import { ServiceLocator } from './utils/ServiceLocator';
 import { type IFileProviderService } from './utils/fileProviders/IFileProviderService';
 
 export interface IBaseServices {
-    'files': IFileProviderService
-    'config': GlobalConfigService
+    'files': IFileProviderService;
+    'config': GlobalConfigService;
 }
 
 const serviceProviderSingletone = new ServiceLocator<IBaseServices>();

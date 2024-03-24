@@ -4,6 +4,6 @@ export class GadgetComponent {
     constructor (
         /** unique string */
         public readonly uuid: uuidT,
-        public readonly own: boolean
+        public readonly own: boolean,
     ) { }
 }

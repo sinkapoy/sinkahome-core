@@ -1,6 +1,6 @@
 export interface IService {
-    init: () => void
-    inited: boolean
+    init: () => void;
+    inited: boolean;
 }
 
 export class ServiceLocator<ServicesT> {

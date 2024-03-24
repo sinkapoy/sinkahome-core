@@ -3,20 +3,20 @@ import { serviceLocator } from '../../serviceLocator';
 import { HomeSystem } from '../HomeSystem';
 
 interface FileT {
-    path: string
-    content: string
+    path: string;
+    content: string;
 }
 
 /**
  * @deprecated
  */
 export interface IFileEvents {
-    'readFile': [string]
-    'fileContent': [FileT]
-    'writeFile': [FileT]
-    'appendFile': [FileT]
-    'listDir': [dirPath: string]
-    'dirFiles': [dirPath: string, dirFileNames: string[]]
+    'readFile': [string];
+    'fileContent': [FileT];
+    'writeFile': [FileT];
+    'appendFile': [FileT];
+    'listDir': [dirPath: string];
+    'dirFiles': [dirPath: string, dirFileNames: string[]];
 }
 
 /**
@@ -31,7 +31,7 @@ export class FileProviderSystem extends HomeSystem {
 
             this.engine.emit('fileContent', {
                 path,
-                content
+                content,
             });
         });
         this.setupEvent('writeFile', (file: FileT) => {

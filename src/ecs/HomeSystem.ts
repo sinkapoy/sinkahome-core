@@ -1,5 +1,5 @@
 import {
-    type Node, type NodeClassType, type NodeList, System
+    type Node, type NodeClassType, type NodeList, System,
 } from '@ash.ts/ash';
 import type { HomeEngine } from './HomeEngine';
 import { type EventCbT, type HomeEvent } from './HomeEvent';
@@ -54,10 +54,10 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
     }
 
     setupNodeList<T extends Node>(opt: {
-        node: NodeClassType<T>
-        onAdd?: (node: T) => void
-        onRemove?: (node: T) => void
-        onUpdate?: (node: T, dt: number) => void
+        node: NodeClassType<T>;
+        onAdd?: (node: T) => void;
+        onRemove?: (node: T) => void;
+        onUpdate?: (node: T, dt: number) => void;
     }): NodeList<T> {
         const list = this.engine.getNodeList(opt.node);
         if (opt.onAdd) {
@@ -83,7 +83,7 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
     setupEvent<Type extends keyof T & string>(
         name: Type,
         cb: EventCbT<T[Type] & []>,
-        once = false
+        once = false,
     ): void {
         if (once) {
             throw new Error('once event subscription not emplemented');
