@@ -22,6 +22,8 @@ export enum PropertyDataType {
     object,
     /** serialized json object (string which can be converted to js object) */
     json,
+    /** the number of milliseconds elapsed since midnight, January 1, 1970 UTC */
+    date,
 }
 
 export type ValuePropertyT<T extends PropertyDataType> = T extends PropertyDataType.boolean ? boolean :
@@ -30,6 +32,7 @@ export type ValuePropertyT<T extends PropertyDataType> = T extends PropertyDataT
             T extends PropertyDataType.string ? string :
                 T extends PropertyDataType.json ? string :
                     T extends PropertyDataType.object ? object :
+                        T extends PropertyDataType.date ? number :
                         any;
 
 export interface IProperty {
@@ -86,8 +89,8 @@ export class Property<T extends PropertyDataType> {
 
 export class PropertiesComponent extends Map<string, Property<any>> {
     createPropertyFromJson<T extends PropertyDataType = PropertyDataType.any>(json: IProperty): Property<T> {
-        const isAccessMode = json.accessMode === undefined || json.accessMode === null;
-        if (!json.id || isAccessMode) {
+        const isAccessModeUndefined = json.accessMode === undefined || json.accessMode === null;
+        if (!json.id || isAccessModeUndefined) {
             throw new Error(`try convert broken json to gadget property\n${JSON.stringify(json)}`);
         }
 
