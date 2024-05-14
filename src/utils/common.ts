@@ -1,7 +1,8 @@
+import { PropertyAccessMode } from "./../ecs/components/PropertiesComponent";
 import { Entity, type Node, type NodeList } from '@ash.ts/ash';
 import { LogComponent } from 'src/ecs/components/LogComponent';
 import type { uuidT } from '../exportedTypes/common';
-import { PropertiesComponent } from '../ecs/components/PropertiesComponent';
+import { PropertiesComponent, PropertyDataType } from '../ecs/components/PropertiesComponent';
 import { ActionsComponent } from '../ecs/components/ActionsComponent';
 import { EventsComponent } from '../ecs/components/EventsComponent';
 import { GadgetComponent } from '../ecs/components/GadgetComponent';
@@ -21,9 +22,18 @@ export function foreachNode<T extends Node> (list: NodeList<T>, cb: (node: T) =>
 
 export function createGadget (uuid: uuidT, own: boolean): Entity {
     const entity = new Entity(uuid);
+    const properties = new PropertiesComponent();
+
+    properties.createPropertyFromJson({
+        id: 'user-name',
+        dataType: PropertyDataType.string,
+        value: '',
+        accessMode: PropertyAccessMode.rwn,
+    });
+
     entity
         .add(new GadgetComponent(uuid, own))
-        .add(new PropertiesComponent())
+        .add(properties)
         .add(new ActionsComponent())
         .add(new EventsComponent());
 

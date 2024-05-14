@@ -1,9 +1,10 @@
-import { Engine } from '@ash.ts/ash';
+import { Engine, Entity, NodeList } from '@ash.ts/ash';
 import { FileProviderSystem } from './systems/FileProviderSystem';
 import { ArrayMap } from '../utils/ArrayMap';
 import { type HomeSystem } from './HomeSystem';
 import { HomeEvent } from './HomeEvent';
-import { type IHomeCoreEvents } from '../exportedTypes/common';
+import { uuidT, type IHomeCoreEvents } from '../exportedTypes/common';
+import { GadgetNode } from './nodes/common';
 
 export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> extends Engine {
     private readonly eventMaps = new Map<string | number | symbol, Array<HomeSystem<any>>>();
@@ -12,8 +13,13 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
 
     private readonly eventsToEmit = new ArrayMap<string | number | symbol, HomeEvent[]>();
 
+    protected gadgets: NodeList<GadgetNode>;
+
     constructor () {
         super();
+
+        this.gadgets = this.getNodeList(GadgetNode);
+
         this.addSystem(new FileProviderSystem(), 0);
     }
 
@@ -91,5 +97,39 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
         }
         this.updating = false;
         this.updateComplete.dispatch();
+    }
+
+    /**
+     * @description
+     * do search by uuid
+     * @yields
+     * eval time O(log(n))
+     * @param uuid 
+     * @returns 
+     */
+    getByUUID(uuid: uuidT){
+        return super.getEntityByName(uuid) as Entity | undefined;
+    }
+
+    /**
+     * @description
+     * do search by 'user-name' property
+     * @yields
+     * eval time O(n)
+     * @param name 
+     * @returns 
+     */
+    getByUserName(name: string){
+        const result: Entity[] = [];
+        let gadget = this.gadgets.head;
+        while(gadget){
+            const val = gadget.properties.get('user-name')?.value
+            if(val === name){
+                result.push(val)
+            }
+            gadget = gadget.next;
+        }
+
+        return result;
     }
 }

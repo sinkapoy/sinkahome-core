@@ -9,8 +9,8 @@ export class GlobalConfigService implements IService {
     private initedFlag = false;
 
     private readonly config: Record<string, any> & IBaseConfigs = {
-        configFilesPath: 'serverData',
-        configIntegrationFilesPath: 'serverData/integrations',
+        configFilesPath: 'server-data',
+        configIntegrationFilesPath: 'server-data/integrations',
     };
 
     get inited (): boolean {
