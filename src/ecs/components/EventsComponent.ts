@@ -5,8 +5,8 @@ export interface IGadgetEvents {
     'gadgetEvent': [Entity, ...any];
     'gadgetPropertyEvent': [Entity, Property<any>];
     'writeGadgetProperty': [entity: Entity, propId: string, value: string | number | boolean];
-    'invokeGadgetAction': [entity: Entity, actionId: string, ...args: any];
-    'gadgetActonResult': [entity: Entity, actionId: string, result: any];
+    'invokeGadgetAction': [entity: Entity, actionId: string, ...args: any[]];
+    'gadgetActonResult': [entity: Entity, actionId: string, result: any[]];
 }
 
 export type GadgetEventsT = keyof IGadgetEvents;

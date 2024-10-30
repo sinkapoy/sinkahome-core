@@ -1,9 +1,9 @@
-import { Engine, Entity, NodeList } from '@ash.ts/ash';
+import { Engine, type Entity, type NodeList } from '@ash.ts/ash';
 import { FileProviderSystem } from './systems/FileProviderSystem';
 import { ArrayMap } from '../utils/ArrayMap';
 import { type HomeSystem } from './HomeSystem';
 import { HomeEvent } from './HomeEvent';
-import { uuidT, type IHomeCoreEvents } from '../exportedTypes/common';
+import { type uuidT, type IHomeCoreEvents } from '../exportedTypes/common';
 import { GadgetNode } from './nodes/common';
 
 export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> extends Engine {
@@ -104,10 +104,10 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
      * do search by uuid
      * @yields
      * eval time O(log(n))
-     * @param uuid 
-     * @returns 
+     * @param uuid
+     * @returns
      */
-    getByUUID(uuid: uuidT){
+    getByUUID (uuid: uuidT) {
         return super.getEntityByName(uuid) as Entity | undefined;
     }
 
@@ -116,16 +116,16 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
      * do search by 'user-name' property
      * @yields
      * eval time O(n)
-     * @param name 
-     * @returns 
+     * @param name
+     * @returns
      */
-    getByUserName(name: string){
+    getByUserName (name: string) {
         const result: Entity[] = [];
         let gadget = this.gadgets.head;
-        while(gadget){
-            const val = gadget.properties.get('user-name')?.value
-            if(val === name){
-                result.push(val)
+        while (gadget) {
+            const val = gadget.properties.get('user-name')?.value;
+            if (val === name) {
+                result.push(val);
             }
             gadget = gadget.next;
         }

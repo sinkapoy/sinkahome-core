@@ -14,16 +14,26 @@ export interface IActionResult {
 export interface IAction {
     readonly id: string;
     description?: string;
-    readonly args: IActionArgument[];
-    readonly result: IActionResult[];
+    readonly argsT: IActionArgument[];
+    readonly resultT: IActionResult[];
+}
+
+export enum GadgetActionState {
+    none,
+    invoking,
+    finished,
 }
 
 class Action implements IAction {
+    public lastArgs: any[] = [];
+    public lastResult: any[] = [];
+    public state: GadgetActionState = GadgetActionState.none;
+    public lastFinishTime: number = 0;
     constructor (
         public readonly id: string,
         public description?: string,
-        public readonly args: IActionArgument[] = [],
-        public readonly result: IActionResult[] = [],
+        public readonly argsT: IActionArgument[] = [],
+        public readonly resultT: IActionResult[] = [],
     ) {}
 }
 
@@ -32,11 +42,13 @@ export class ActionsComponent extends Map<string, Action> {
         const action = new Action(
             json.id,
             json.description,
-            JSON.parse(JSON.stringify(json.args)) as IActionArgument[],
-            JSON.parse(JSON.stringify(json.args)) as IActionResult[],
+            JSON.parse(JSON.stringify(json.argsT)) as IActionArgument[],
+            JSON.parse(JSON.stringify(json.resultT)) as IActionResult[],
         );
         this.set(json.id, action);
 
         return action;
     }
 }
+
+export type ActionT = Action;

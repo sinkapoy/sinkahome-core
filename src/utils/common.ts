@@ -1,8 +1,7 @@
-import { PropertyAccessMode } from "./../ecs/components/PropertiesComponent";
+import { PropertyAccessMode, PropertiesComponent, PropertyDataType } from './../ecs/components/PropertiesComponent';
 import { Entity, type Node, type NodeList } from '@ash.ts/ash';
 import { LogComponent } from 'src/ecs/components/LogComponent';
 import type { uuidT } from '../exportedTypes/common';
-import { PropertiesComponent, PropertyDataType } from '../ecs/components/PropertiesComponent';
 import { ActionsComponent } from '../ecs/components/ActionsComponent';
 import { EventsComponent } from '../ecs/components/EventsComponent';
 import { GadgetComponent } from '../ecs/components/GadgetComponent';

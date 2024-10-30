@@ -33,7 +33,7 @@ export type ValuePropertyT<T extends PropertyDataType> = T extends PropertyDataT
                 T extends PropertyDataType.json ? string :
                     T extends PropertyDataType.object ? object :
                         T extends PropertyDataType.date ? number :
-                        any;
+                            any;
 
 export interface IProperty {
     id: string;
