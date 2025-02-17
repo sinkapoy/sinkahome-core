@@ -3,6 +3,7 @@
 
 import type PathT from 'path';
 import { type IFileProviderService } from './IFileProviderService';
+import { IFileMetadata } from './IFileProvider';
 
 declare type PathModuleT = typeof import('node:path');
 declare type FsPromisesModuleT = typeof import('node:fs/promises');
@@ -83,5 +84,17 @@ export class OsFileProvider implements IFileProviderService {
 
     filename (p: string): string {
         return path.basename(p);
+    }
+
+    fileMetadata (path: string) {
+        const fsStats = fs.statSync(path);
+        return <IFileMetadata>{
+            size: fsStats.size,
+            aTimeMs: fsStats.atimeMs,
+            cTimeMs: fsStats.ctimeMs,
+            mTimeMs: fsStats.mtimeMs,
+            isFile: fsStats.isFile(),
+            isDir: fsStats.isDirectory(),
+        };
     }
 }

@@ -1,3 +1,4 @@
+import { type IFileMetadata } from './IFileProvider';
 import { type IFileProviderService } from './IFileProviderService';
 
 export class BrowserFileProvider implements IFileProviderService {
@@ -47,4 +48,8 @@ export class BrowserFileProvider implements IFileProviderService {
     filename (path: string): string {
         return path;
     }
+
+    fileMetadata (path: string): IFileMetadata {
+        throw new Error('not implemented fileMetadata for browsers');
+    };
 }
