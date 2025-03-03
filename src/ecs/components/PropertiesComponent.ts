@@ -97,25 +97,25 @@ export class PropertiesComponent extends Map<string, Property<any>> {
         let { dataType } = json;
         if (!dataType) {
             switch (typeof json.value) {
-                    case 'boolean':
-                        dataType = PropertyDataType.boolean;
-                        break;
-                    case 'number':
-                        dataType = PropertyDataType.float;
-                        break;
-                    case 'string':
-                        try {
-                            JSON.parse(json.value);
-                            dataType = PropertyDataType.json;
-                        } catch {
-                            dataType = PropertyDataType.string;
-                        }
-                        break;
-                    case 'object':
-                        dataType = PropertyDataType.object;
-                        break;
-                    default:
-                        dataType = PropertyDataType.any;
+                case 'boolean':
+                    dataType = PropertyDataType.boolean;
+                    break;
+                case 'number':
+                    dataType = PropertyDataType.float;
+                    break;
+                case 'string':
+                    try {
+                        JSON.parse(json.value);
+                        dataType = PropertyDataType.json;
+                    } catch {
+                        dataType = PropertyDataType.string;
+                    }
+                    break;
+                case 'object':
+                    dataType = PropertyDataType.object;
+                    break;
+                default:
+                    dataType = PropertyDataType.any;
             }
         }
 

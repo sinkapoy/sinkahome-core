@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/consistent-type-imports */
-/* eslint-disable global-require */
+ 
+ 
 
 import type PathT from 'path';
 import { type IFileProviderService } from './IFileProviderService';

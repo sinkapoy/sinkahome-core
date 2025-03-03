@@ -30,22 +30,22 @@ export class LogComponent {
     private write (log: string[], args: any[]): void {
         const msg = args.map((arg) => {
             switch (typeof arg) {
-                    case 'string':
-                        return arg;
-                    case 'bigint':
-                    case 'number':
-                        return arg.toString(10);
-                    case 'function':
-                        return `function ${arg.name}`;
-                    case 'boolean':
-                        return arg ? 'true' : 'false';
-                    case 'object':
-                        return JSON.stringify(arg, undefined, 2);
-                    case 'symbol':
-                    case 'undefined':
-                        return String(arg);
-                    default:
-                        return '';
+                case 'string':
+                    return arg;
+                case 'bigint':
+                case 'number':
+                    return arg.toString(10);
+                case 'function':
+                    return `function ${arg.name}`;
+                case 'boolean':
+                    return arg ? 'true' : 'false';
+                case 'object':
+                    return JSON.stringify(arg, undefined, 2);
+                case 'symbol':
+                case 'undefined':
+                    return String(arg);
+                default:
+                    return '';
             }
         });
 

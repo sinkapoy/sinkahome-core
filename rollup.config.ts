@@ -1,7 +1,6 @@
-import commonjs from "rollup-plugin-commonjs";
-import json from "rollup-plugin-json";
-import nodeResolve from "rollup-plugin-node-resolve";
-import typescript from "rollup-plugin-typescript2";
+import commonjs from "@rollup/plugin-commonjs";
+import typescript from '@rollup/plugin-typescript';
+import nodeResolve from "@rollup/plugin-node-resolve";
 
 export default [
     {
@@ -22,17 +21,11 @@ export default [
             }
         ],
         plugins: [
-            json(),
             typescript({
-                tsconfig: "tsconfig.json",
-                useTsconfigDeclarationDir: true,
-                tsconfigOverride: {
-                    declaration: false,
-                }
+                tsconfig: "tsconfig.json"
             }),
             nodeResolve({ preferBuiltins: true, }),
             commonjs({ extensions: [".js", ".ts"] }),
-
         ]
     }
 ];

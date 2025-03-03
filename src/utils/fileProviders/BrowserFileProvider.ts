@@ -25,7 +25,7 @@ export class BrowserFileProvider implements IFileProviderService {
         await this.write(path, file + content);
     }
 
-    async listDir (path: string): Promise<string[]> {
+    async listDir (_path: string): Promise<string[]> {
         return [];
     }
 
@@ -33,7 +33,7 @@ export class BrowserFileProvider implements IFileProviderService {
         return !!localStorage.getItem(path);
     }
 
-    async mkdir (path: string): Promise<void> {
+    async mkdir (_path: string): Promise<void> {
         await Promise.resolve();
     }
 
@@ -49,7 +49,7 @@ export class BrowserFileProvider implements IFileProviderService {
         return path;
     }
 
-    fileMetadata (path: string): IFileMetadata {
+    fileMetadata (_path: string): IFileMetadata {
         throw new Error('not implemented fileMetadata for browsers');
     };
 }

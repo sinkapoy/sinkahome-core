@@ -22,7 +22,7 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
         this.onInit();
     }
 
-    removeFromEngine (engine: HomeEngine): void {
+    removeFromEngine (_engine: HomeEngine): void {
         this.onDestroy();
     }
 
@@ -46,7 +46,7 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
             if (!this.eventCallbacks.has(event.name)) continue;
             const cbs = this.eventCallbacks.get(event.name);
             for (let cbi = 0; cbi < cbs.length; cbi++) {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                 
                 cbs[cbi](...event.args);
             }
         }
