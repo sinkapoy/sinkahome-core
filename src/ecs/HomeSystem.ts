@@ -78,7 +78,7 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
 
     abstract onDestroy (): void;
 
-    abstract onUpdate (dt: number): void;
+    abstract onUpdate (_dt: number): void;
 
     setupEvent<Type extends keyof T & string>(
         name: Type,

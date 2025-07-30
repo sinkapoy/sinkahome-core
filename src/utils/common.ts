@@ -1,10 +1,6 @@
-import { PropertyAccessMode, PropertiesComponent, PropertyDataType } from './../ecs/components/PropertiesComponent';
-import { Entity, type Node, type NodeList } from '@ash.ts/ash';
-import { LogComponent } from 'src/ecs/components/LogComponent';
+import { type Node, type NodeList } from '@ash.ts/ash';
 import type { uuidT } from '../exportedTypes/common';
-import { ActionsComponent } from '../ecs/components/ActionsComponent';
-import { EventsComponent } from '../ecs/components/EventsComponent';
-import { GadgetComponent } from '../ecs/components/GadgetComponent';
+import { Gadget } from 'src/ecs/Gadget';
 
 export enum VmType {
     NODE,
@@ -19,31 +15,12 @@ export function foreachNode<T extends Node> (list: NodeList<T>, cb: (node: T) =>
     }
 }
 
-export function createGadget (uuid: uuidT, own: boolean): Entity {
-    const entity = new Entity(uuid);
-    const properties = new PropertiesComponent();
-
-    properties.createPropertyFromJson({
-        id: 'user-name',
-        dataType: PropertyDataType.string,
-        value: '',
-        accessMode: PropertyAccessMode.rwn,
-    });
-
-    entity
-        .add(new GadgetComponent(uuid, own))
-        .add(properties)
-        .add(new ActionsComponent())
-        .add(new EventsComponent());
-
-    return entity;
-}
-
-export function createLog (name: uuidT): Entity {
-    const entity = new Entity(`log:${name}`);
-    entity
-        .add(LogComponent);
-    return entity;
+/** 
+ * @deprecated
+ * use new Gadget() instead 
+ */
+export function createGadget (uuid: uuidT, own: boolean): Gadget {
+    return new Gadget(uuid, own);
 }
 
 export function checkVM (): VmType {

@@ -1,5 +1,4 @@
 import { Engine, type Entity, type NodeList } from '@ash.ts/ash';
-import { FileProviderSystem } from './systems/FileProviderSystem';
 import { ArrayMap } from '../utils/ArrayMap';
 import { type HomeSystem } from './HomeSystem';
 import { HomeEvent } from './HomeEvent';
@@ -19,8 +18,6 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
         super();
 
         this.gadgets = this.getNodeList(GadgetNode);
-
-        this.addSystem(new FileProviderSystem(), 0);
     }
 
     emit<T extends keyof EventsT>
@@ -133,3 +130,5 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
         return result;
     }
 }
+
+export const homeEngine = new HomeEngine<IHomeCoreEvents & {[key: string]: any[];}>();

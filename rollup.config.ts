@@ -1,31 +1,43 @@
-import commonjs from "@rollup/plugin-commonjs";
-import typescript from '@rollup/plugin-typescript';
-import nodeResolve from "@rollup/plugin-node-resolve";
+import typescript from 'rollup-plugin-typescript2';
+import images from '@rollup/plugin-image';
+import copy from 'rollup-plugin-copy';
 
+const config = {
+    plugins: [
+        typescript({
+            tsconfig: 'tsconfig.json',
+            useTsconfigDeclarationDir: true,
+            tsconfigOverride: {
+                declaration: false,
+            }
+        }),
+        images({dom: false}),
+        copy({
+            targets: [
+                {src: 'src/assets', dest: 'dist/assets'}
+            ]
+        })
+    ],
+    external: [
+        /^(?!.*inject-css.js).*node_modules\/(.+)$/,
+        'vue',
+        'eventemitter3',
+        'fs',
+        'fs/promises',
+        'http',
+        '@ash.ts/ash',
+    ],
+};
 export default [
     {
-        input: "src/index.ts",
-        external: [
-            'websocket',
-            'fs',
-            'fs/promises',
-            'http',
-            '@ash.ts/ash',
-            /node_modules/
-        ],
+        input: 'src/index.ts',
         output: [
             {
-                file: "dist/core.js",
-                format: "es",
+                file: 'dist/core.js',
+                format: 'es',
                 sourcemap: true,
             }
         ],
-        plugins: [
-            typescript({
-                tsconfig: "tsconfig.json"
-            }),
-            nodeResolve({ preferBuiltins: true, }),
-            commonjs({ extensions: [".js", ".ts"] }),
-        ]
+        ...config,
     }
 ];
