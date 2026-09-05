@@ -4,7 +4,8 @@ import { homeEngine, type HomeEngine } from 'src/ecs/HomeEngine';
 import { serviceLocator } from './serviceLocator';
 import { getFileSystemProvider } from './utils/fileProviders';
 import { GlobalConfigService } from './services/GlobalConfigService';
-import { HomeInjectorSystem } from './ecs/systems/HomeInjectorSystem';
+import { ServerUsersService } from './services/users/ServerUsersSystem';
+import { EventsSystem } from './ecs/systems/EventsSystem';
 
 
 // export core features
@@ -14,13 +15,14 @@ export { serviceLocator } from './serviceLocator';
 export { type IService, ServiceLocator } from './utils/ServiceLocator';
 export * from 'src/ecs/components/export';
 export * from 'src/utils/ArrayMap';
+export * from 'src/utils/common';
+export * from 'src/services/users/ServerUsersSystem';
 
 serviceLocator().set('files', getFileSystemProvider());
 serviceLocator().set('config', new GlobalConfigService());
+serviceLocator().set('users', new ServerUsersService());
 
-homeEngine.addSystem(new HomeInjectorSystem(), 0);
 homeEngine.addSystem(new FileProviderSystem(), 0);
+homeEngine.addSystem(new EventsSystem, Number.MAX_SAFE_INTEGER);
 
-
-export const homeEngine = new HomeEngine<Record<string, any[]> & IHomeCoreEvents>();
 export type HomeEngineT<T> = HomeEngine<T>;

@@ -1,9 +1,14 @@
-import { Engine, type Entity, type NodeList } from '@ash.ts/ash';
+import { Engine, Signal2, type Entity, type NodeList } from '@ash.ts/ash';
 import { ArrayMap } from '../utils/ArrayMap';
 import { type HomeSystem } from './HomeSystem';
 import { HomeEvent } from './HomeEvent';
 import { type uuidT, type IHomeCoreEvents } from '../exportedTypes/common';
 import { GadgetNode } from './nodes/common';
+import type { Property } from './components/PropertiesComponent';
+
+interface IGadgetSignals {
+    propChanged: Signal2<Entity, Property<any>>;
+}
 
 export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> extends Engine {
     private readonly eventMaps = new Map<string | number | symbol, Array<HomeSystem<any>>>();
@@ -13,6 +18,8 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
     private readonly eventsToEmit = new ArrayMap<string | number | symbol, HomeEvent[]>();
 
     protected gadgets: NodeList<GadgetNode>;
+
+    protected events = new Map<uuidT, IGadgetSignals>();
 
     constructor () {
         super();
@@ -25,6 +32,7 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
     (event: T, ...args: (EventsT)[T]): void {
         // @ts-expect-error force rest arg
         const eventObj = new HomeEvent(event, ...args);
+        // console.log('emit', event, args)
         this.eventsToEmit.get(event).push(eventObj);
     }
 
@@ -66,6 +74,19 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
                 this.nextTickCbs[i]();
             }
             this.nextTickCbs.splice(0);
+        }
+        // props processing
+        let head  = this.gadgets.head;
+        while(head){
+            for(const prop of head.properties.values()){
+                if(prop.changed){
+                    prop.changed = false;
+                    if (this.events.has(head.entity.name)){
+                        this.events.get(head.entity.name)!.propChanged.dispatch(head.entity, prop);
+                    }
+                }
+            }
+            head = head.next;
         }
         // events processing
         for (const entry of this.eventsToEmit.entries()) {
@@ -128,6 +149,27 @@ export class HomeEngine<EventsT = Record<string, any[]> & IHomeCoreEvents> exten
         }
 
         return result;
+    }
+
+
+    onGadgetPropertyEvent(gadget: uuidT, callback: (entity: Entity, prop: Property<any>)=>void){
+        if(!this.events.has(gadget)){
+            this.events.set(gadget, {
+                propChanged: new Signal2(),
+            });
+        }
+        this.events.get(gadget)!.propChanged.add(callback);
+    }
+
+    offGadgetPropertyEvent(gadget: uuidT, callback?: (...args: any)=>void){
+        if(this.events.has(gadget)){
+            const signal = this.events.get(gadget)!.propChanged;
+            if(callback){
+                signal.remove(callback);
+            } else {
+                signal.removeAll();
+            }
+        }
     }
 }
 

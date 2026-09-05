@@ -6,3 +6,19 @@ export class UserComponent {
 
     }
 }
+
+
+export class UserTokenGeneratorInfo {
+    constructor(
+        public readonly secretKey: string,
+        public readonly refreshSecretKey: string,
+        public readonly totpKey: string,
+    ){}
+}
+
+export class UserTokenInfo {
+    constructor(
+        public readonly token: string,
+        public readonly refresh: string
+    ) { }
+}

@@ -33,3 +33,14 @@ export function checkVM (): VmType {
 export function uniqueArray<T> (array: T[]): T[] {
     return array.filter((element, index) => array.indexOf(element) === index);
 }
+
+export const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+export const digits = '1234567890';
+
+export function generateFromCharset(length: number, charset: string){
+    let result = '';
+    for(let i = 0; i < length; i++){
+        result += charset[Math.round((Math.random() * 95827641)%charset.length)];
+    }
+    return result;
+}

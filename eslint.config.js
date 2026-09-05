@@ -38,7 +38,7 @@ export default tseslint.config(
         plugins: {
             'stylistic': stylisticTs,
         },
-        files: ['**/*.ts', '**/*.mjs', '**/*.vue', '**/*.js'],
+        files: ['**/*.{js,ts,vue}'],
         rules: {
             ...tseslint.configs.strictTypeChecked[0].rules,
             '@typescript-eslint/no-explicit-any': 'off',

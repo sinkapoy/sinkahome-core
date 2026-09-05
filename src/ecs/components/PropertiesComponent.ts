@@ -1,6 +1,6 @@
 import { HomeEngine } from '../HomeEngine';
 import EventEmitter from 'eventemitter3';
-import { type Gadget } from '../Gadget';
+import { Entity, Signal2 } from '@ash.ts/ash';
 
 export enum PropertyAccessMode {
     none = 0,
@@ -51,7 +51,6 @@ export interface IProperty {
     units?: string;
 }
 
-const defaultWriteSetter = function(_oldValue: any, newValue: any){return Promise.resolve(newValue);};
 
 export class Property<T extends PropertyDataType> extends EventEmitter <{write: (property: Property<any>)=>void;}>{
     description?: string;
@@ -64,7 +63,7 @@ export class Property<T extends PropertyDataType> extends EventEmitter <{write: 
 
     max?: number;
 
-    private _value: ValuePropertyT<T>;
+    protected _value: ValuePropertyT<T>;
 
     enumData?: Record<string, ValuePropertyT<T>>;
 
@@ -72,7 +71,8 @@ export class Property<T extends PropertyDataType> extends EventEmitter <{write: 
 
     units?: string;
 
-    $propertySetter = defaultWriteSetter;
+    // for the engine
+    changed = false;
 
     constructor (opt: {
         id: string;
@@ -85,7 +85,7 @@ export class Property<T extends PropertyDataType> extends EventEmitter <{write: 
         enumData?: Record<string, ValuePropertyT<T>>;
     }) {
         super();
-        this.value = opt.value;
+        this._value = opt.value;
         this.dataType = opt.dataType;
         this.id = opt.id;
         this.accessMode = opt.accessMode;
@@ -100,12 +100,8 @@ export class Property<T extends PropertyDataType> extends EventEmitter <{write: 
     }
 
     set value(value: ValuePropertyT<T>){
-        const oldVal = this._value;
-        this.$propertySetter(this._value, value).catch((error)=>{
-            console.error(error);
-            this._value = oldVal;
-        }).then(()=>this.emit('write', this));
         this._value = value;
+        this.changed = true;
     }
 }
 
@@ -113,16 +109,15 @@ export class PropertiesComponent extends Map<string, Property<any>> {
 
     homeEngine?: HomeEngine;
 
-    constructor(private entity: Gadget){
-        super();
+    readonly changedSignal = new Signal2<Entity, string[]>();
 
-    }
+    readonly changedProps = new Set<string>();
 
     override set(key: string, value: Property<any>): this {
         if(this.has(key)){
             this.get(key)?.removeAllListeners('write');
         }
-        value.on('write', this.onWrite, this);
+        value.on('write', this.onValueWriten, this);
         return super.set(key, value);
     }
 
@@ -138,6 +133,7 @@ export class PropertiesComponent extends Map<string, Property<any>> {
         return super.get(key);
     }
     
+    /** @deprecated use PropertiesComponent.set(id, new Property()) */
     createPropertyFromJson<T extends PropertyDataType = PropertyDataType.any>(json: IProperty): Property<T> {
         const isAccessModeUndefined = json.accessMode === undefined || json.accessMode === null;
         if (!json.id || isAccessModeUndefined) {
@@ -183,13 +179,18 @@ export class PropertiesComponent extends Map<string, Property<any>> {
         this.set(property.id, property);
     }
 
+    readValue<T>(id: string){
+        return this.get(id)?.value as T | undefined;
+    }
+
     /** @deprecated */
     getTyped<T extends PropertyDataType>(id: string): Property<T> | undefined {
         return this.get(id) as Property<T> | undefined;
     }
 
-    private onWrite<T extends PropertyDataType>(property: Property<T>){
-        this.homeEngine?.emit('gadgetPropertyEvent', this.entity, property);
-        this.entity.emit('propertyWrite', property, this.entity);
-    };
+    private onValueWriten(prop: Property<any>){
+        if(prop.accessMode & PropertyAccessMode.notify){
+            this.changedProps.add(prop.id);
+        }
+    }
 }

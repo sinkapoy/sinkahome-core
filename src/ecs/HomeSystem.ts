@@ -19,11 +19,19 @@ export abstract class HomeSystem<T extends IHomeCoreEvents = IHomeCoreEvents> ex
 
     addToEngine (engine: HomeEngine<any>): void {
         this.engine = engine as HomeEngine<T>;
-        this.onInit();
+        try{
+            this.onInit();
+        } catch (e){
+            console.error('cant start system', e);
+        }
     }
 
     removeFromEngine (_engine: HomeEngine): void {
-        this.onDestroy();
+        try{
+            this.onDestroy();
+        } catch (e){
+            console.error('cant stop system', e);
+        }
     }
 
     update (dt: number): void {

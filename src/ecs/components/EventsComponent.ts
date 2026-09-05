@@ -1,9 +1,10 @@
 import type { Entity } from '@ash.ts/ash';
-import type { Property, PropertyDataType } from './PropertiesComponent';
+import type { IProperty, PropertyDataType } from './PropertiesComponent';
 
 export interface IGadgetEvents {
     'gadgetEvent': [Entity, ...any];
-    'gadgetPropertyEvent': [Entity, Property<any>];
+    'gadgetPropertyEvent': [Entity, IProperty]; // deprecated
+    /** @deprecated */
     'writeGadgetProperty': [entity: Entity, propId: string, value: string | number | boolean];
     'invokeGadgetAction': [entity: Entity, actionId: string, ...args: any[]];
     'gadgetActonResult': [entity: Entity, actionId: string, result: any[]];
@@ -23,6 +24,7 @@ class Event implements IGadgetEvent {
 
     }
 }
+
 export class EventsComponent extends Map<string, Event> {
     createFromJson (json: Partial<IGadgetEvent>): Event {
         if (!json.id) throw new Error('try to create event without id');
